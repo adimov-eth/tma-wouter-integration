@@ -1,1 +1,1 @@
-export { useIntegration } from './useIntegration.js';
+export { useIntegration, createRouterConfig } from './useIntegration.js';
