@@ -1,23 +1,100 @@
-# @telegram-apps/react-router-integration
+# Wouter Integration for Telegram Mini Apps
 
-[code-badge]: https://img.shields.io/badge/source-black?logo=github
+This package provides a seamless integration between [Wouter](https://github.com/molefrog/wouter), a minimal routing library for React, and the Telegram Mini Apps SDK. It allows you to use Wouter's simple and intuitive routing in your Telegram Mini Apps while leveraging the navigation capabilities of the Telegram platform.
 
-[docs-badge]: https://img.shields.io/badge/documentation-blue?logo=gitbook&logoColor=white
+## Features
 
-[code-link]: https://github.com/Telegram-Mini-Apps/telegram-apps/tree/master/packages/react-router-integration
+- Easy integration with Telegram Mini Apps SDK
+- Support for base path configuration
+- Consistent navigation behavior with Telegram's native navigation
+- TypeScript support
+- Minimal overhead and easy to use API
 
-[docs-link]: https://docs.telegram-mini-apps.com/packages/telegram-apps-react-router-integration
+## Installation
 
-[npm-link]: https://npmjs.com/package/@telegram-apps/react-router-integration
+To install the wouter-integration package, run the following command in your project directory:
 
-[npm-badge]: https://img.shields.io/npm/v/@telegram-apps/react-router-integration?logo=npm
+```bash
+npm install @telegram-apps/wouter-integration wouter
+```
 
-[size-badge]: https://img.shields.io/bundlephobia/minzip/@telegram-apps/react-router-integration
+Or if you're using yarn:
 
-[![NPM][npm-badge]][npm-link]
-![Size][size-badge]
-[![docs-badge]][docs-link]
-[![code-badge]][code-link]
+```bash
+yarn add @telegram-apps/wouter-integration wouter
+```
 
-[@telegram-apps/sdk navigator](https://docs.telegram-mini-apps.com/packages/telegram-apps-sdk/navigation)
-integration for React's `react-router-dom` package.
+## Usage
+
+Here's a basic example of how to use the wouter-integration in your Telegram Mini App:
+
+```jsx
+import React, { useMemo, useEffect } from 'react';
+import { Router, Route } from 'wouter';
+import { initNavigator } from '@telegram-apps/sdk-react';
+import { createRouterConfig } from '@telegram-apps/wouter-integration';
+
+function App() {
+  const navigator = useMemo(() => initNavigator('app-navigation-state'), []);
+  const routerConfig = useMemo(() => createRouterConfig(navigator, { base: '/app' }), [navigator]);
+
+  useEffect(() => {
+    navigator.attach();
+    return () => navigator.detach();
+  }, [navigator]);
+
+  return (
+    <Router {...routerConfig}>
+      <Route path="/" component={Home} />
+      <Route path="/users" component={Users} />
+      <Route path="/about" component={About} />
+    </Router>
+  );
+}
+
+export default App;
+```
+
+## API Reference
+
+### `createRouterConfig(nav, options?)`
+
+Creates a Wouter-compatible router configuration object.
+
+- `nav`: The Telegram Mini Apps `BrowserNavigator` instance.
+- `options`: An optional object with the following property:
+  - `base`: A string representing the base path for your app (default: '/').
+
+Returns an object with `hook` and `base` properties to be spread into Wouter's `Router` component.
+
+### `useIntegration(nav)`
+
+A hook that provides access to the current location and navigator.
+
+- `nav`: The Telegram Mini Apps `BrowserNavigator` instance.
+
+Returns a tuple `[location, navigator]` where:
+- `location` is an object containing `pathname`, `search`, `hash`, `state`, and `key`.
+- `navigator` is an object with methods `go`, `push`, `replace`, `createHref`, and `encodeLocation`.
+
+### `createLocationHook(nav)`
+
+Creates a Wouter-compatible location hook.
+
+- `nav`: The Telegram Mini Apps `BrowserNavigator` instance.
+
+Returns a function that can be used as Wouter's location hook.
+
+## Important Notes
+
+- Make sure to attach the Telegram Mini Apps navigator in a `useEffect` hook to properly integrate with the platform's navigation.
+- The base path option in `createRouterConfig` allows you to serve your app from a subdirectory without changing your route definitions.
+- This integration ensures that Wouter's navigation works in harmony with Telegram's native navigation, providing a seamless user experience.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
